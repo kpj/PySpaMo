@@ -8,6 +8,7 @@ import matplotlib.animation as anime
 
 from automata import GameOfLife
 
+
 def add_glider(pos, mat):
     """ Add glider to state at given position (row, col)
     """
