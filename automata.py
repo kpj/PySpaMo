@@ -25,16 +25,15 @@ class CellularAutomaton(object):
         yield self.lattice
         pbar = ProgressBar()
         for _ in pbar(range(steps)):
-            tmp = self.apply_rule(self.lattice)
-            yield tmp
-            self.lattice = tmp
+            self.lattice = self.apply_rule(self.lattice)
+            yield self.lattice
 
 class GameOfLife(CellularAutomaton):
     """ Simulate Conway's Game of Life
     """
 
     def apply_rule(self, mat):
-        """ Apply one Game of Life iteration to the given system state
+        """ Possibly the worst implementation of Game of life ever
         """
         def get_neighbor_num(pos):
             """ Get number of neighbors in Moore neighborhood of given position
