@@ -3,10 +3,12 @@ Create lattices, simulate models on them and animate the result
 """
 
 import numpy as np
+import numpy.random as npr
+
 import matplotlib.pyplot as plt
 import matplotlib.animation as anime
 
-from automata import GameOfLife
+from automata import GameOfLife, SnowDrift
 
 
 def add_glider(pos, mat):
@@ -41,15 +43,17 @@ def animate(evolution, out_file='out.gif'):
         interval=100
         #blit=True
     )
-    plt.show()
+    #plt.show()
 
     anim.save(out_file, writer='imagemagick')
 
 def setup_lattice():
     """ Populate lattice with its initial configuration
     """
-    mat = np.zeros((50, 50))
-    mat = add_glider((7, 2), mat)
+    #mat = np.zeros((15, 15))
+    #mat = add_glider((7, 2), mat)
+
+    mat = npr.random_integers(0, 1, size=(15, 15))
 
     return mat
 
@@ -59,7 +63,7 @@ def simulate(Model):
     lattice = setup_lattice()
 
     evolution = []
-    for grid in Model(lattice).iterate(1000):
+    for grid in Model(lattice).iterate(100):
         evolution.append(grid)
 
     animate(evolution)
@@ -67,7 +71,8 @@ def simulate(Model):
 def main():
     """ Have fun :-)
     """
-    simulate(GameOfLife)
+    #simulate(GameOfLife)
+    simulate(SnowDrift)
 
 if __name__ == '__main__':
     main()
