@@ -59,7 +59,7 @@ def simulate(Model):
     lattice = setup_lattice()
 
     evolution = []
-    for grid in GameOfLife(lattice).iterate(1000):
+    for grid in Model(lattice).iterate(1000):
         evolution.append(grid)
 
     animate(evolution)
