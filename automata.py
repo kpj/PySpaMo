@@ -4,7 +4,7 @@ Implementation of several spatial models running on a lattice
 
 import numpy as np
 
-from progressbar import ProgressBar
+from tqdm import tqdm
 
 
 class CellularAutomaton(object):
@@ -24,16 +24,16 @@ class CellularAutomaton(object):
         """
         raise NotImplementedError
 
-    def iterate(self, steps):
+    def iterate(self, steps, **kwargs):
         """ Yield each step up to `steps` of the current CA
         """
-        self.setup()
+        self.setup(**kwargs)
 
         yield self.lattice
-        pbar = ProgressBar()
-        for _ in pbar(range(steps)):
+        for _ in tqdm(range(steps)):
             self.lattice = self.apply_rule(self.lattice)
             yield self.lattice
+        raise StopIteration
 
     def get_neighbours(self, pos, mat=None):
         """ Get elements in Moore neighborhood of given position.
@@ -79,7 +79,7 @@ class SnowDrift(CellularAutomaton):
     """ Simulate game according to some payoff matrix
     """
 
-    def setup(self):
+    def setup(self, benefit=0.6, cost=0.2):
         """ Generate payoff matrix. It's of the form
             [
                 [<C-C>, <C-D>],
@@ -88,12 +88,9 @@ class SnowDrift(CellularAutomaton):
             C -> cooperate
             D -> defect
         """
-        self.benefit = 0.6
-        self.cost = 0.2
-
         self.payoff_mat = np.array([
-            [self.benefit - self.cost / 2, self.benefit - self.cost],
-            [self.benefit, 0]
+            [benefit - cost / 2, benefit - cost],
+            [benefit, 0]
         ])
 
     def get_payoff(self, own_strat, other_strat):
