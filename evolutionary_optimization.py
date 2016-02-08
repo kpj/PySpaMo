@@ -16,7 +16,7 @@ class EvolutionaryOptimizer(object):
     def __init__(self):
         """ Set some parameters
         """
-        self.mutation_probability = 0.002
+        self.mutation_probability = 0.02
 
     def init(self, size):
         """ Generate initial population
@@ -65,9 +65,11 @@ class EvolutionaryOptimizer(object):
 
             print('Mean individual:', np.mean(population, axis=0))
             #print()
+            yield np.mean(population, axis=0)
 
 class SnowdriftOptimizer(EvolutionaryOptimizer):
-    """ Optimize snowdrift game by assuming each individual to be the pair of benefit and cost floats
+    """ Optimize snowdrift game by assuming each individual to be the pair of
+        benefit and cost floats
     """
     def init(self, size):
         pop = []
@@ -80,7 +82,7 @@ class SnowdriftOptimizer(EvolutionaryOptimizer):
 
     def mutate(self, obj):
         sigma = 0.05
-        return (random.gauss(obj[0], sigma), random.gauss(obj[1], sigma))
+        return (obj[0] * random.gauss(1, sigma), obj[1] * random.gauss(1, sigma))
 
     def get_fitness(self, obj):
         # setup system
@@ -88,11 +90,13 @@ class SnowdriftOptimizer(EvolutionaryOptimizer):
         model = SnowDrift(lattice)
 
         # generate dynamics
+        iter_num = 100
+
         benefit, cost = obj
-        res = list(model.iterate(10, benefit=benefit, cost=cost))
+        res = list(model.iterate(iter_num, benefit=benefit, cost=cost))
 
         # cut off transient
-        ss = res[-2:]
+        ss = res[-int(iter_num/10):]
 
         # compute fitness
         fit = -np.sum(ss)
