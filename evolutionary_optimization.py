@@ -50,15 +50,12 @@ class EvolutionaryOptimizer(object):
 
         res = []
         for _ in tqdm(range(max_iter)):
-            #print(population)
             pop_fitness = [self.get_fitness(o) for o in population]
-            #print(pop_fitness)
 
             # crossover best individuals and replace worst with child
             best_indiv = np.argpartition(pop_fitness, -2)[-2:]
             mom, dad = population[best_indiv]
             child = self.crossover(mom, dad)
-            #print(mom, dad, '->', child)
 
             worst_indiv = np.argmin(pop_fitness)
             population[worst_indiv] = child
@@ -69,9 +66,8 @@ class EvolutionaryOptimizer(object):
                 else o
             population = np.array([mut(o) for o in population])
 
-            #print('Mean individual:', np.mean(population, axis=0))
-            #print()
-            res.append(np.mean(population, axis=0))
+            res.append(
+                (np.mean(population, axis=0), np.var(population, axis=0)))
         return res
 
 class SnowdriftOptimizer(EvolutionaryOptimizer):
@@ -112,13 +108,17 @@ class SnowdriftOptimizer(EvolutionaryOptimizer):
 def plot_runs(runs):
     """ Plot population evolutions
     """
+    ts = range(len(runs[0]))
     cmap = plt.get_cmap('viridis')
     for i, r in enumerate(runs):
-        bs, cs = zip(*r)
+        mean, var = zip(*r)
+        bm, cm = zip(*mean)
+        bv, cv = zip(*var)
+
         color = cmap(float(i)/len(runs))
 
-        plt.plot(bs, '-', c=color)
-        plt.plot(cs, '--', c=color)
+        plt.errorbar(ts, bm, fmt='-', yerr=bv, c=color)
+        plt.errorbar(ts, cm, fmt='--', yerr=cv, c=color)
 
     plt.title('population evolution overview')
     plt.xlabel('time')
